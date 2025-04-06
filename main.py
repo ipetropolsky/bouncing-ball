@@ -44,9 +44,17 @@ class SpinningCircle:
             return
         start_angle = math.radians(self.angle)
         end_angle = math.radians((self.angle + 360 - self.gap_angle) % 360)
-        pygame.draw.arc(surface, (100, 100, 255),
-                        (CENTER[0] - self.radius, CENTER[1] - self.radius, self.radius * 2, self.radius * 2),
-                        start_angle, end_angle, 3)
+        if end_angle < start_angle:
+            pygame.draw.arc(surface, (100, 100, 255),
+                            (CENTER[0] - self.radius, CENTER[1] - self.radius, self.radius * 2, self.radius * 2),
+                            start_angle, math.radians(360), 3)
+            pygame.draw.arc(surface, (100, 100, 255),
+                            (CENTER[0] - self.radius, CENTER[1] - self.radius, self.radius * 2, self.radius * 2),
+                            math.radians(0), end_angle, 3)
+        else:
+            pygame.draw.arc(surface, (100, 100, 255),
+                            (CENTER[0] - self.radius, CENTER[1] - self.radius, self.radius * 2, self.radius * 2),
+                            start_angle, end_angle, 3)
 
     def is_inside_gap(self, pos):
         if not self.active:
@@ -72,13 +80,15 @@ class SpinningCircle:
             if self.is_inside_gap(pos):
                 self.explode()
                 return
-            nx = dx / dist
-            ny = dy / dist
-            dot = vel[0] * nx + vel[1] * ny
-            vel[0] -= 2 * dot * nx
-            vel[1] -= 2 * dot * ny
-            pos[0] = CENTER[0] + (self.radius - ball_radius - 1) * nx
-            pos[1] = CENTER[1] + (self.radius - ball_radius - 1) * ny
+            # Only bounce if not inside gap
+            if not self.is_inside_gap(pos):
+                nx = dx / dist
+                ny = dy / dist
+                dot = vel[0] * nx + vel[1] * ny
+                vel[0] -= 2 * dot * nx
+                vel[1] -= 2 * dot * ny
+                pos[0] = CENTER[0] + (self.radius - ball_radius - 1) * nx
+                pos[1] = CENTER[1] + (self.radius - ball_radius - 1) * ny
 
     def explode(self):
         self.active = False
