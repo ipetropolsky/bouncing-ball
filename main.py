@@ -77,9 +77,14 @@ class SpinningCircle:
 
     def draw(self, surface, color):
         log(self.index, self.start_angle, self.end_angle)
-        pygame.draw.arc(surface, color if self.active else pygame.Color('#333333'),
-                        (CENTER[0] - self.radius, CENTER[1] - self.radius, self.radius * 2, self.radius * 2),
-                        math.radians(self.start_angle), math.radians(self.end_angle), CIRCLE_WIDTH)
+        pygame.draw.arc(
+            surface,
+            color,
+            (CENTER[0] - self.radius, CENTER[1] - self.radius, self.radius * 2, self.radius * 2),
+            math.radians(self.start_angle),
+            math.radians(self.end_angle),
+            CIRCLE_WIDTH
+        )
 
     def is_inside_gap(self, pos):
         if not self.active:
@@ -192,14 +197,12 @@ while running:
         circle.reflect(ball_pos, ball_vel)
 
     # Update and draw spinning circles
-    i = 1
-    for circle in spinning_circles:
+    for i, circle in enumerate(spinning_circles):
         if circle.active:
             circle.update()
-            circle.draw(screen, pygame.Color(COLORS[i]))
+            circle.draw(screen, pygame.Color(COLORS[i + 1]))
         elif debug:
             circle.draw(screen, '#333333')
-        i += 1
 
     # Add to trail
     trail.append((ball_pos[0], ball_pos[1], pygame.time.get_ticks()))
